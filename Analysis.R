@@ -120,7 +120,7 @@ EWScotlook <- EWScotlook[!duplicated(EWScotlook),]
 EWScotlook <- rename(EWScotlook,"Local Authority" = LAD17NM, "Region/Country" = RGN11NM, "Neighbourhood name" = LSOA11NM)
 
 cc <- merge(cc, EWScotlook, by.x ="lsoa11cd", by.y = "LSOA11CD" )
-cc <- select(cc,-`Population 2018`)
+#cc <- select(cc,-`Population 2018`)
 
 ###### ADD IMD
 
@@ -146,7 +146,7 @@ cc <- cc %>% mutate(`IMD decile London (1 is most deprived)` = ntile(`IMD rank L
 cc <- select(cc,-`IMD Rank (1 is most deprived)`,-`IMD decile (1 is most deprived)`,-`Region/Country`)
 
 
-cc <- cc[,c(1,8,9,11,10,2,3,4,5,6,7)]
+cc <- cc[,c(1,9,10,4,11,12,5:8)]
 
 ###########################################
 ################### TABLE ################
@@ -311,8 +311,10 @@ htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the 
 ################## stats and analysis ######
 ############################################
 
-t1 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
-  summarise("avg % cc change Aug17 to Aug20" = round(mean(`Claimant count rate ppt change (August 2017 - August 2020)`),1))
+table$`Population 2018` <- gsub(",","",table$`Population 2018`) 
+t1 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>%  
+  summarise("avg % cc change Aug17 to Aug20" = round(mean(`Claimant count rate ppt change (August 2017 - August 2020)`),1),
+            "Population 2018" = sum(as.numeric(na.omit(`Population 2018`))) )
 
 write.csv(t1, "Average CC change by deprivation London.csv", row.names = F)
 
