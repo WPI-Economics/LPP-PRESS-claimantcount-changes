@@ -291,7 +291,7 @@ m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = list(padding = 100
                   sizes = c(2.5,4.5,7)*2, position = "bottomright" ) %>% 
   
   addLegend(pal = factpal, values = EWS.centroids.df$`Change decile (1 = low)`, 
-            labels = levels(EWS.centroids.df$`Change decile (1 = low)`), position = "bottomright", title = "Deciles <br>(1 = low)") %>% 
+            labels = levels(EWS.centroids.df$`Change decile (1 = low)`), position = "bottomright", title = "CC change deciles <br>(1 = low)") %>% 
   removeDrawToolbar(clearFeatures = T) %>% 
   addResetMapButton() 
 m2
@@ -304,5 +304,16 @@ combo <- htmltools::tagList(m2, tbl,sources) #I think this makes a combined html
 #browsable(combo)
 
 ############# Move index.html and lib folder manually into /docs htmltools doesn't support detailed file paths :( )
-htmltools::save_html(combo, "index.html", background = "#FFFCF1") #this saves it as an HTML page in the default folder.
+htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the default folder.
+
+
+############################################
+################## stats and analysis ######
+############################################
+
+t1 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
+  summarise("avg % cc change Aug17 to Aug20" = round(mean(`Claimant count rate ppt change (August 2017 - August 2020)`),1))
+
+write.csv(t1, "Average CC change by deprivation London.csv", row.names = F)
+
 
