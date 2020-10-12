@@ -290,7 +290,7 @@ NUTS1 <- NUTS1 %>% filter(nuts118nm != "London")
 
 
 #map element
-m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = list(padding = 100)) %>% setView(-0.035,51.489, 9.5) %>% 
+m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = leafletOptions(padding = 100, zoomSnap = 0.25, zoomDelta = 0.3)) %>% setView(-0.035,51.489, 10.2) %>% 
   setMapWidgetStyle(list(background = "white")) %>% addProviderTiles(providers$CartoDB.Positron, providerTileOptions(opacity = 1) ) %>% 
   
   
@@ -332,21 +332,27 @@ htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the 
 ################## stats and analysis ######
 ############################################
 
+cc <- readRDS("cc.rds")
 table$`Population 2018` <- gsub(",","",table$`Population 2018`) 
 
-table <- merge(table,new, by.x = "lsoa11cd", by.y = "area", all.x = T)
-table <- rename(table,`cc 2020` = claimant_count_new)
+cc <- merge(cc,new, by.x = "lsoa11cd", by.y = "area", all.x = T)
+cc <- merge(cc,old, by.x = "lsoa11cd", by.y = "area", all.x = T)
+cc <- rename(cc,`cc 2020` = claimant_count_new)
+cc <- rename(cc,`cc 2017` = claimant_count_old)
 
-t1 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>%  
-  summarise("avg % cc change Aug17 to Aug20" = round(mean(`Claimant count rate ppt change (August 2017 - August 2020)`),1),
-            "Population 2018" = sum(as.numeric(na.omit(`Population 2018`))) )
+cc[,4:5] <- sapply(cc[,4:5], function(x){as.numeric(sub(",","",x))})
 
-t2 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
-  summarise("totalCC20" = sum(`cc 2020`),
-            "totalpop18" = sum(as.numeric(`Population 2018`)))
 
-t2$`Claimant Count 2020 rate` <- round((t2$totalCC20/t2$totalpop18)*100,1)
+t2 <- cc %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
+  summarise("total CC 2020" = sum(`cc 2020`), "total CC 2017" = sum(`cc 2017`),
+            "totalpop18" = sum(`Population 2018`),"totalpop17" = sum(`Population 2017`))
 
-write.csv(t1, "Average CC change by deprivation London.csv", row.names = F)
+
+t2$`Claimant Count 2020 rate` <- round((t2$`total CC 2020`/t2$totalpop18)*100,1)
+t2$`Claimant Count 2017 rate` <- round((t2$`total CC 2017`/t2$totalpop17)*100,1)
+t2$`CC change` <- t2$`Claimant Count 2020 rate` - t2$`Claimant Count 2017 rate`
+
+
+write.csv(t2, "Average CC change by deprivation London.csv", row.names = F)
 
 
