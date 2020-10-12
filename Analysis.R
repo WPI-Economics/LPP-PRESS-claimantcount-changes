@@ -147,7 +147,7 @@ cc <- select(cc,-`IMD Rank (1 is most deprived)`,-`IMD decile (1 is most deprive
 
 
 cc <- cc[,c(1,9,10,4,11,12,5:8)]
-
+saveRDS(cc, "cc.rds")
 ###########################################
 ################### TABLE ################
 ###########################################
@@ -215,9 +215,11 @@ EWS.centroids.df$ccradius <- (EWS.centroids.df$`Claimant count rate ppt change (
 EWS.centroids.df$"Change decile (1 = low)" <- as.factor(EWS.centroids.df$"Change decile (1 = low)")
 #EWS.centroids.df <- EWS.centroids.df[c(1:14,16,15)]
 
-factpal <- colorFactor("RdBu",levels = levels(EWS.centroids.df$`Change decile (1 = low)`[!is.na(EWS.centroids.df$`Change decile (1 = low)`)]), 
-                       ordered = TRUE, reverse = T )
 
+EWS.centroids.df$`IMD decile London (1 is most deprived)` <- as.factor(EWS.centroids.df$`IMD decile London (1 is most deprived)`)
+
+factpal <- colorFactor("RdBu",levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+                       ordered = TRUE, reverse = F )
 
 labels <- sprintf("<strong>%s</strong><br/>%g ppt change<sup></sup>",
                   EWS.centroids.df$`Neighbourhood name`, round(EWS.centroids.df$`Claimant count rate ppt change (August 2017 - August 2020)`,1)) %>% 
@@ -228,7 +230,7 @@ labels <- sprintf("<strong>%s</strong><br/>%g ppt change<sup></sup>",
 
 
 #function for adding circle sizes to the legend
-addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5, position){
+addLegendCustom <- function(title,map, colors, labels, sizes, opacity = 0.5, position){
   
   colorAdditions <- paste0(colors, "; border-radius: 50%; width:", sizes, "px; height:",
                            sizes, "px", "; position: relative; left: ",max(sizes)-(sizes/2)-12,"px")
@@ -238,7 +240,7 @@ addLegendCustom <- function(map, colors, labels, sizes, opacity = 0.5, position)
                            10,"px",";margin-top: 12px;line-height: ", sizes, "px;'>", 
                            labels, "</div>")
   
-  return(addLegend(map, colors = colorAdditions, 
+  return(addLegend(map, colors = colorAdditions, title = title,
                    labels = labelAdditions, opacity = opacity, position = position))
 }
 
@@ -276,7 +278,7 @@ m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = list(padding = 100
   addCircleMarkers( group = "circlegw",
                     radius = ~`ccradius`,
                     stroke = F,
-                    color = ~factpal(`Change decile (1 = low)`), opacity = 0.85, fillOpacity = 0.85,
+                    color = ~factpal(`IMD decile London (1 is most deprived)`), opacity = 0.85, fillOpacity = 0.85,
                     label = labels,
                     labelOptions = labelOptions(
                       style = list("font-weight" = "normal", padding = "3px 8px"),
@@ -288,10 +290,10 @@ m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = list(padding = 100
   addLegendCustom(colors = c("grey", "grey", "grey"), 
                   labels = c("+1ppts","+5ppts","+10ppts"),
                   
-                  sizes = c(2.5,4.5,7)*2, position = "bottomright" ) %>% 
+                  sizes = c(2.5,4.5,7)*2, position = "bottomright" , title = "CC change <br> 2017-2020<br>&nbsp") %>% 
   
-  addLegend(pal = factpal, values = EWS.centroids.df$`Change decile (1 = low)`, 
-            labels = levels(EWS.centroids.df$`Change decile (1 = low)`), position = "bottomright", title = "CC change deciles <br>(1 = low)") %>% 
+  addLegend(pal = factpal, values = EWS.centroids.df$`IMD decile London (1 is most deprived)`, 
+            labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), position = "bottomright", title = "IMD deciles <br>(1 = low)") %>% 
   removeDrawToolbar(clearFeatures = T) %>% 
   addResetMapButton() 
 m2
