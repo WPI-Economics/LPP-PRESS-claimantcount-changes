@@ -77,15 +77,33 @@ population <- population %>% filter(temp < 1004766) #the last LSOA of London is 
 population <- population %>% select(-temp)
 
 
+population17 <- nomis_get_data("NM_2010_1",
+                             time =  "2017",
+                             geography = c("TYPE298"),
+                             measures = 20100,
+                             c_age = 203,
+                             gender = 0)
+
+population17 <- population17 %>% rename(area = "GEOGRAPHY_CODE",
+                                    population17 = "OBS_VALUE")
+
+population17 <- population17 %>% select(area, population17)
+#Also filter for London only
+population17$temp <- as.numeric(gsub("E","",population17$area))
+population17 <- population17 %>% filter(temp < 1004766) #the last LSOA of London is Wandsworth E01004765
+population17 <- population17 %>% select(-temp)
+
 ######################## Create one dataset ###############################################
 
 cc <- merge(old, new, by = "area")
 
 cc <- merge(cc, population, by = "area", all.x = T)
 
+cc <- merge(cc, population17, by = "area", all.x = T)
+
 ########################### Calculate rates ########################################
 
-cc$old_rate <- (cc$claimant_count_old/cc$population)*100
+cc$old_rate <- (cc$claimant_count_old/cc$population17)*100
 
 cc$new_rate <- (cc$claimant_count_new/cc$population)*100
 
@@ -104,14 +122,15 @@ cc <- cc %>% rename("lsoa11cd" = area,
                     "Claimant count (August 2017)" = claimant_count_old, 
                     "Claimant count (August 2020)" = claimant_count_new, 
                     "Population 2018" = population, 
+                    "Population 2017" = population17, 
                     "Claimant count rate % (August 2017)" = old_rate, 
-                    "Claimant count rate % (August 2020)" = new_rate
-)
+                    "Claimant count rate % (August 2020)" = new_rate)
 
 #format the data
 cc$`Claimant count (August 2017)` <- format(cc$`Claimant count (August 2017)`, big.mark = ",")
 cc$`Claimant count (August 2020)` <- format(cc$`Claimant count (August 2020)`, big.mark = ",")
 cc$`Population 2018` <- format(cc$`Population 2018`, big.mark = ",")
+cc$`Population 2017` <- format(cc$`Population 2017`, big.mark = ",")
 
 EWlook <- read_csv("os lsoa msoa lookup.csv")
 EWScotlook <- EWlook %>% select(LSOA11CD, LSOA11NM,LAD17NM, RGN11NM)
@@ -146,7 +165,7 @@ cc <- cc %>% mutate(`IMD decile London (1 is most deprived)` = ntile(`IMD rank L
 cc <- select(cc,-`IMD Rank (1 is most deprived)`,-`IMD decile (1 is most deprived)`,-`Region/Country`)
 
 
-cc <- cc[,c(1,9,10,4,11,12,5:8)]
+cc <- cc[,c(1,10,11,4,5,12,13,6:9)]
 saveRDS(cc, "cc.rds")
 ###########################################
 ################### TABLE ################
@@ -155,7 +174,7 @@ library(reactable)
 library(crosstalk)
 
 
-table <- cc #%>% select(-lsoa11cd)
+table <- cc %>% select(-`Population 2018`, -`Population 2017`)
 
 
 #table1 <- table[!is.na(table$`Change decile (1 = low)`),]
@@ -248,12 +267,12 @@ addLegendCustom <- function(title,map, colors, labels, sizes, opacity = 0.5, pos
 library(htmltools)
 
 #page element title
-title <- tags$div(HTML("Claimant count percentage point change,<br> August 2017 to August 2020, Great Britain</br>"), 
+title <- tags$div(HTML("Claimant count change and deprivation,<br> August 2017 to August 2020, London</br>"), 
                   style = "font-family: Open Sans;color: #2A2A2A;font-weight: bold; font-size: 22px; text-align: center"
 )
 
 #page element data sources
-sources <- tags$div(HTML("Claimant Count, ONS<br> Analysis: WPI Economics on behalf of CRC"), 
+sources <- tags$div(HTML("Claimant Count, ONS; Indices of Multiple Deprivation 2019, MHCLG<br> Analysis: WPI Economics on behalf of Trust for London"), 
                     style = "font-family: Open Sans;color: #2A2A2A;font-style: italic; font-size: 12px; text-align: left"
 )
 
@@ -302,7 +321,7 @@ m2
 
 
 
-combo <- htmltools::tagList(m2, tbl,sources) #I think this makes a combined html object
+combo <- htmltools::tagList(title, m2, tbl,sources) #I think this makes a combined html object
 #browsable(combo)
 
 ############# Move index.html and lib folder manually into /docs htmltools doesn't support detailed file paths :( )
@@ -314,9 +333,19 @@ htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the 
 ############################################
 
 table$`Population 2018` <- gsub(",","",table$`Population 2018`) 
+
+table <- merge(table,new, by.x = "lsoa11cd", by.y = "area", all.x = T)
+table <- rename(table,`cc 2020` = claimant_count_new)
+
 t1 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>%  
   summarise("avg % cc change Aug17 to Aug20" = round(mean(`Claimant count rate ppt change (August 2017 - August 2020)`),1),
             "Population 2018" = sum(as.numeric(na.omit(`Population 2018`))) )
+
+t2 <- table %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
+  summarise("totalCC20" = sum(`cc 2020`),
+            "totalpop18" = sum(as.numeric(`Population 2018`)))
+
+t2$`Claimant Count 2020 rate` <- round((t2$totalCC20/t2$totalpop18)*100,1)
 
 write.csv(t1, "Average CC change by deprivation London.csv", row.names = F)
 
