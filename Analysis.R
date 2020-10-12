@@ -333,7 +333,7 @@ htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the 
 ############################################
 
 cc <- readRDS("cc.rds")
-table$`Population 2018` <- gsub(",","",table$`Population 2018`) 
+
 
 cc <- merge(cc,new, by.x = "lsoa11cd", by.y = "area", all.x = T)
 cc <- merge(cc,old, by.x = "lsoa11cd", by.y = "area", all.x = T)
@@ -349,8 +349,8 @@ t2 <- cc %>% group_by(`IMD decile London (1 is most deprived)`) %>%
 
 
 t2$`Claimant Count 2020 rate` <- round((t2$`total CC 2020`/t2$totalpop18)*100,1)
-t2$`Claimant Count 2017 rate` <- round((t2$`total CC 2017`/t2$totalpop18)*100,1)
-t2$`CC change` <- t2$`Claimant Count 2020 rate` - t2$`Claimant Count 2017 rate`
+t2$`Claimant Count 2019 rate` <- round((t2$`total CC 2019`/t2$totalpop18)*100,1)
+t2$`CC change` <- t2$`Claimant Count 2020 rate` - t2$`Claimant Count 2019 rate`
 
 
 write.csv(t2, "Average CC change by deprivation London.csv", row.names = F)
