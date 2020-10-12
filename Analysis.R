@@ -103,31 +103,31 @@ cc <- merge(cc, population17, by = "area", all.x = T)
 
 ########################### Calculate rates ########################################
 
-cc$old_rate <- (cc$claimant_count_old/cc$population17)*100
+cc$old_rate <- (cc$claimant_count_old/cc$population)*100
 
 cc$new_rate <- (cc$claimant_count_new/cc$population)*100
 
 
-cc$`Claimant count rate ppt change (August 2017 - August 2020)` <- cc$new_rate - cc$old_rate
+cc$`Claimant count rate ppt change (August 2019 - August 2020)` <- cc$new_rate - cc$old_rate
 
 cc$old_rate <- round(cc$old_rate,1)
 cc$new_rate <- round(cc$new_rate,1)
-cc$`Claimant count rate ppt change (August 2017 - August 2020)` <- round(cc$`Claimant count rate ppt change (August 2017 - August 2020)`,1)
+cc$`Claimant count rate ppt change (August 2019 - August 2020)` <- round(cc$`Claimant count rate ppt change (August 2019 - August 2020)`,1)
 
-cc$"Change decile (1 = low)" <- ntile(cc$`Claimant count rate ppt change (August 2017 - August 2020)`,10)
+cc$"Change decile (1 = low)" <- ntile(cc$`Claimant count rate ppt change (August 2019 - August 2020)`,10)
 cc$"Change decile (1 = low)" <- as.factor(cc$"Change decile (1 = low)")
 
 #make nice names for the columns
 cc <- cc %>% rename("lsoa11cd" = area, 
-                    "Claimant count (August 2017)" = claimant_count_old, 
+                    "Claimant count (August 2019)" = claimant_count_old, 
                     "Claimant count (August 2020)" = claimant_count_new, 
                     "Population 2018" = population, 
                     "Population 2017" = population17, 
-                    "Claimant count rate % (August 2017)" = old_rate, 
+                    "Claimant count rate % (August 2019)" = old_rate, 
                     "Claimant count rate % (August 2020)" = new_rate)
 
 #format the data
-cc$`Claimant count (August 2017)` <- format(cc$`Claimant count (August 2017)`, big.mark = ",")
+cc$`Claimant count (August 2019)` <- format(cc$`Claimant count (August 2019)`, big.mark = ",")
 cc$`Claimant count (August 2020)` <- format(cc$`Claimant count (August 2020)`, big.mark = ",")
 cc$`Population 2018` <- format(cc$`Population 2018`, big.mark = ",")
 cc$`Population 2017` <- format(cc$`Population 2017`, big.mark = ",")
@@ -189,7 +189,7 @@ tbl <- reactable(table2, selection = "multiple",
                  onClick = "select",
                  rowStyle = list(cursor = "pointer"),
                  minRows = 10,filterable = F,searchable = F, wrap = T , defaultPageSize = 15, striped = T, highlight = T,
-                 defaultSorted = list("Claimant count rate ppt change (August 2017 - August 2020)" = "desc"),
+                 defaultSorted = list("Claimant count rate ppt change (August 2019 - August 2020)" = "desc"),
                  columns = list(`Change decile (1 = low)` = colDef(filterable = T),
                                 `Local Authority` = colDef(filterable = T),
                                 `IMD decile London (1 is most deprived)` = colDef(filterable = T)),
@@ -230,7 +230,7 @@ lsoa.centroids <- geojson_sf("https://opendata.arcgis.com/datasets/b7c49538f0464
 EWS.centroids.df <- merge(cc,lsoa.centroids , by = "lsoa11cd", all.x = T)
 EWS.centroids.df <- st_as_sf(EWS.centroids.df)
 
-EWS.centroids.df$ccradius <- (EWS.centroids.df$`Claimant count rate ppt change (August 2017 - August 2020)`)* 0.5 + 2
+EWS.centroids.df$ccradius <- (EWS.centroids.df$`Claimant count rate ppt change (August 2019 - August 2020)`)* 0.5 + 2
 EWS.centroids.df$"Change decile (1 = low)" <- as.factor(EWS.centroids.df$"Change decile (1 = low)")
 #EWS.centroids.df <- EWS.centroids.df[c(1:14,16,15)]
 
@@ -241,7 +241,7 @@ factpal <- colorFactor("RdBu",levels = levels(EWS.centroids.df$`IMD decile Londo
                        ordered = TRUE, reverse = F )
 
 labels <- sprintf("<strong>%s</strong><br/>%g ppt change<sup></sup>",
-                  EWS.centroids.df$`Neighbourhood name`, round(EWS.centroids.df$`Claimant count rate ppt change (August 2017 - August 2020)`,1)) %>% 
+                  EWS.centroids.df$`Neighbourhood name`, round(EWS.centroids.df$`Claimant count rate ppt change (August 2019 - August 2020)`,1)) %>% 
   lapply(htmltools::HTML)
 
 
@@ -267,7 +267,7 @@ addLegendCustom <- function(title,map, colors, labels, sizes, opacity = 0.5, pos
 library(htmltools)
 
 #page element title
-title <- tags$div(HTML("Claimant count change and deprivation,<br> August 2017 to August 2020, London</br>"), 
+title <- tags$div(HTML("Claimant count change and deprivation,<br> August 2019 to August 2020, London</br>"), 
                   style = "font-family: Open Sans;color: #2A2A2A;font-weight: bold; font-size: 22px; text-align: center"
 )
 
@@ -309,7 +309,7 @@ m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = leafletOptions(pad
   addLegendCustom(colors = c("grey", "grey", "grey"), 
                   labels = c("+1ppts","+5ppts","+10ppts"),
                   
-                  sizes = c(2.5,4.5,7)*2, position = "bottomright" , title = "CC change <br> 2017-2020<br>&nbsp") %>% 
+                  sizes = c(2.5,4.5,7)*2, position = "bottomright" , title = "CC change <br> 2019-2020<br>&nbsp") %>% 
   
   addLegend(pal = factpal, values = EWS.centroids.df$`IMD decile London (1 is most deprived)`, 
             labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), position = "bottomright", title = "IMD deciles <br>(1 = low)") %>% 
@@ -338,18 +338,18 @@ table$`Population 2018` <- gsub(",","",table$`Population 2018`)
 cc <- merge(cc,new, by.x = "lsoa11cd", by.y = "area", all.x = T)
 cc <- merge(cc,old, by.x = "lsoa11cd", by.y = "area", all.x = T)
 cc <- rename(cc,`cc 2020` = claimant_count_new)
-cc <- rename(cc,`cc 2017` = claimant_count_old)
+cc <- rename(cc,`cc 2019` = claimant_count_old)
 
 cc[,4:5] <- sapply(cc[,4:5], function(x){as.numeric(sub(",","",x))})
 
 
 t2 <- cc %>% group_by(`IMD decile London (1 is most deprived)`) %>% 
-  summarise("total CC 2020" = sum(`cc 2020`), "total CC 2017" = sum(`cc 2017`),
-            "totalpop18" = sum(`Population 2018`),"totalpop17" = sum(`Population 2017`))
+  summarise("total CC 2020" = sum(`cc 2020`), "total CC 2019" = sum(`cc 2019`),
+            "totalpop18" = sum(`Population 2018`))
 
 
 t2$`Claimant Count 2020 rate` <- round((t2$`total CC 2020`/t2$totalpop18)*100,1)
-t2$`Claimant Count 2017 rate` <- round((t2$`total CC 2017`/t2$totalpop17)*100,1)
+t2$`Claimant Count 2017 rate` <- round((t2$`total CC 2017`/t2$totalpop18)*100,1)
 t2$`CC change` <- t2$`Claimant Count 2020 rate` - t2$`Claimant Count 2017 rate`
 
 
