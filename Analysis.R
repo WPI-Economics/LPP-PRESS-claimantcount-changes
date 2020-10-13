@@ -272,7 +272,9 @@ title <- tags$div(HTML("Claimant count change and deprivation,<br> August 2019 t
 )
 
 #page element data sources
-sources <- tags$div(HTML("Claimant Count, ONS; Indices of Multiple Deprivation 2019, MHCLG<br> Analysis: WPI Economics on behalf of Trust for London"), 
+sources <- tags$div(HTML("Sources: Claimant Count, ONS; Indices of Multiple Deprivation 2019, MHCLG<br> 
+                         Analysis: WPI Economics on behalf of Trust for London<br>
+                         Note: Indices of Multiple Deprivation have been re-based for London"), 
                     style = "font-family: Open Sans;color: #2A2A2A;font-style: italic; font-size: 12px; text-align: left"
 )
 
