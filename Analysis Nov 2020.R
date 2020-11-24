@@ -377,7 +377,7 @@ plot <- highchart() %>%
   hc_chart(type = "column") %>%
   hc_xAxis(categories = t2$`IMD decile London (1 is most deprived)`,title = list(text = "")) %>%
   #hc_add_series(data = df$median, name = "Change in the median (average)")%>%
-  hc_add_series(data = t2$`CC change`, name = "Change", dataLabels = list(enabled = T), showInLegend = F)%>%
+  hc_add_series(data = t2$`CC change`, name = "Percentage point change", dataLabels = list(enabled = T), showInLegend = F)%>%
   hc_colors(colourlist)%>%
    hc_yAxis(title = list(text = "Percentage point change"), gridLineColor = "#ffffff",
             labels = list(enabled = F))%>%
@@ -389,6 +389,9 @@ plot <- highchart() %>%
 plot
 
 title <- "Change in unemployment benefit claim rate, October 2019 - October 2020, by neighbourhood deprivation deciles"
+Note <- "Indices of Multiple Deprivation have been re-based for London"
+Data_source <- "Claimant count, ONS; Indices of Multiple Deprivation 2019, MHCLG"
+Analysis <- "WPI Economics on behalf of Trust for London"
 
 export_hc(plot, "BLG1.js", as = "is")
 
