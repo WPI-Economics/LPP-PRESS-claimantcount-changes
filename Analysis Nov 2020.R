@@ -366,4 +366,29 @@ t2$`CC change` <- t2$`Claimant Count 2020 rate` - t2$`Claimant Count 2019 rate`
 
 write.csv(t2, "Average CC change by deprivation London OCT20.csv", row.names = F)
 
+library(highcharter)
+
+colourlist <-  c("#186fa9","#c4ccd6")
+
+t2$`IMD decile London (1 is most deprived)`[t2$`IMD decile London (1 is most deprived)` == 1] <- "Most deprived"
+t2$`IMD decile London (1 is most deprived)`[t2$`IMD decile London (1 is most deprived)` == 10] <- "Least deprived"
+
+plot <- highchart() %>% 
+  hc_chart(type = "column") %>%
+  hc_xAxis(categories = t2$`IMD decile London (1 is most deprived)`,title = list(text = "")) %>%
+  #hc_add_series(data = df$median, name = "Change in the median (average)")%>%
+  hc_add_series(data = t2$`CC change`, name = "Change", dataLabels = list(enabled = T), showInLegend = F)%>%
+  hc_colors(colourlist)%>%
+   hc_yAxis(title = list(text = "Percentage point change"), gridLineColor = "#ffffff",
+            labels = list(enabled = F))%>%
+  hc_title(text = "Change in unemployment benefit claim rate, October 2019 - October 2020, by neighbourhood deprivation deciles", align = "left", 
+           style = list(fontSize ="32px",color = "#0d2e5b", 
+                        fontFamily = "Arial", fontWeight = "400" ))%>% 
+  hc_exporting(enabled = T) 
+
+plot
+
+title <- "Change in unemployment benefit claim rate, October 2019 - October 2020, by neighbourhood deprivation deciles"
+
+export_hc(plot, "BLG1.js", as = "is")
 
