@@ -51,7 +51,7 @@
   "series": [
     {
       "data": [7.1, 6.6, 6.2, 5.8, 5.4, 4.9, 4.4, 3.7, 3.2, 2.5],
-      "name": "Change",
+      "name": "Percentage point change",
       "dataLabels": {
         "enabled": true
       },
