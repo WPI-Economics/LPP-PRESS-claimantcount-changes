@@ -334,7 +334,7 @@ combo <- htmltools::tagList(title, m2, tbl,sources) #I think this makes a combin
 
 ############# Move index.html and lib folder manually into /docs htmltools doesn't support detailed file paths :( )
 htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the default folder.
-
+htmlwidgets::saveWidget(combo,file =  "Updatedmapwidget.html", selfcontained = T)
 
 ############################################
 ################## stats and analysis ######
