@@ -273,7 +273,7 @@ addLegendCustom <- function(title,map, colors, labels, sizes, opacity = 0.5, pos
 library(htmltools)
 
 #page element title
-title <- tags$div(HTML("Claimant count change and deprivation,<br> August 2019 to August 2020, London</br>"), 
+title <- tags$div(HTML("Claimant count change and deprivation,<br> October 2019 to October 2020, London</br>"), 
                   style = "font-family: Open Sans;color: #2A2A2A;font-weight: bold; font-size: 22px; text-align: center"
 )
 
@@ -334,7 +334,7 @@ combo <- htmltools::tagList(title, m2, tbl,sources) #I think this makes a combin
 
 ############# Move index.html and lib folder manually into /docs htmltools doesn't support detailed file paths :( )
 htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the default folder.
-htmlwidgets::saveWidget(combo,file =  "Updatedmapwidget.html", selfcontained = T)
+#htmlwidgets::saveWidget(combo,file =  "Updatedmapwidget.html", selfcontained = T)
 
 ############################################
 ################## stats and analysis ######
