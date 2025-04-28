@@ -4,10 +4,10 @@
     "type": "column"
   },
   "title": {
-    "text": "Change in unemployment benefit claim rate, October 2019 - October 2020, by neighbourhood deprivation deciles",
+    "text": "Change in unemployment benefit claim rate, March 2019 - March 2025, by neighbourhood deprivation deciles",
     "align": "left",
     "style": {
-      "fontSize": "32px",
+      "fontSize": "18px",
       "color": "#0d2e5b",
       "fontFamily": "Arial",
       "fontWeight": "400"
@@ -50,7 +50,7 @@
   },
   "series": [
     {
-      "data": [7.1, 6.6, 6.2, 5.8, 5.4, 4.9, 4.4, 3.7, 3.2, 2.5],
+      "data": [5.5, 5, 4.6, 4.1, 3.8, 3.2, 2.9, 2.3, 1.7, 1.1],
       "name": "Percentage point change",
       "dataLabels": {
         "enabled": true
@@ -58,5 +58,5 @@
       "showInLegend": false
     }
   ],
-  "colors": ["#186fa9", "#c4ccd6"]
+  "colors": ["#007a8b", "#dad7d2"]
 }
