@@ -622,7 +622,7 @@ plot <- highchart() %>%
 
 plot
 
-title <- "Change in unemployment benefit claim rate, March 2019 - March 2025, by neighbourhood deprivation deciles"
+title <- "Change in unemployment benefit claim rate, by neighbourhood deprivation deciles (March 2019 to March 2025)"
 Note <- "Indices of Multiple Deprivation have been re-based for London"
 Data_source <- "Claimant count, ONS; Indices of Multiple Deprivation 2019, MHCLG"
 Analysis <- "WPI Economics on behalf of Trust for London"
