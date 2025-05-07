@@ -238,7 +238,7 @@ cc <- select(cc,-`IMD Rank (1 is most deprived)`,-`IMD decile (1 is most deprive
 #cc <- cc[,c(1,10,11,4,5,12,13,6:9)]
 
 
-saveRDS(cc, paste0("cc2_",Sys.Date(), ".rds"))
+#saveRDS(cc, paste0("cc2_",Sys.Date(), ".rds"))
 
 ########################## HTML OUTPUTS, 1 year change #########################
 
@@ -319,7 +319,15 @@ EWS.centroids.df$"Change decile (1 = low)" <- as.factor(EWS.centroids.df$"Change
 
 EWS.centroids.df$`IMD decile London (1 is most deprived)` <- as.factor(EWS.centroids.df$`IMD decile London (1 is most deprived)`)
 
-factpal <- colorFactor("RdBu",levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+#load LPP colours
+source("../LPP-Updates/plots/LPP colours.r")
+
+# factpal <- colorFactor("RdBu",
+#                        levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+#                        ordered = TRUE, reverse = F )
+
+factpal <- colorFactor((c(red.5, rev(green.5))),
+                       levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
                        ordered = TRUE, reverse = F )
 
 labels <- sprintf("<strong>%s</strong><br/>%g ppt change<sup></sup>",
@@ -398,7 +406,10 @@ m2 <- leaflet(EWS.centroids.dfXT, height = "580px", options = leafletOptions(pad
                   sizes = c(2.5,4.5,7)*2, position = "bottomright" , title = "CC change <br> 2024-2025<br>&nbsp") %>% 
   
   addLegend(pal = factpal, values = EWS.centroids.df$`IMD decile London (1 is most deprived)`, 
-            labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), position = "bottomright", title = "IMD deciles <br>(1 = low)") %>% 
+            labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+            position = "bottomright", 
+            opacity = .85,
+            title = "IMD deciles <br>(1 = low)") %>% 
   removeDrawToolbar(clearFeatures = T) %>% 
   addResetMapButton() 
 m2
@@ -411,7 +422,7 @@ combo <- htmltools::tagList(title, m2, tbl,sources) #I think this makes a combin
 #browsable(combo)
 
 ############# Move index.html and lib folder manually into /docs htmltools doesn't support detailed file paths :( )
-htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the default folder.
+#htmltools::save_html(combo, "index.html") #this saves it as an HTML page in the default folder.
 #htmlwidgets::saveWidget(combo,file =  "Updatedmapwidget.html", selfcontained = T)
 
 
@@ -482,7 +493,8 @@ EWS.centroids.df$"Change decile (1 = low)" <- as.factor(EWS.centroids.df$"Change
 
 EWS.centroids.df$`IMD decile London (1 is most deprived)` <- as.factor(EWS.centroids.df$`IMD decile London (1 is most deprived)`)
 
-factpal <- colorFactor("RdBu",levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+factpal <- colorFactor((c(red.5, rev(green.5))),
+                       levels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
                        ordered = TRUE, reverse = F )
 
 labels <- sprintf("<strong>%s</strong><br/>%g ppt change<sup></sup>",
@@ -513,14 +525,14 @@ library(htmltools)
 
 #page element title
 title <- tags$div(HTML("Claimant count change and deprivation,<br> March 2019 to March 2025, London</br>"), 
-                  style = "font-family: Open Sans;color: #2A2A2A;font-weight: bold; font-size: 22px; text-align: center"
+                  style = "font-family: Roboto;color: #00424f; font-weight: bold; font-size: 22px; text-align: center"
 )
 
 #page element data sources
 sources <- tags$div(HTML("Sources: Claimant Count, ONS; Indices of Multiple Deprivation 2019, MHCLG<br> 
                          Analysis: WPI Economics on behalf of Trust for London<br>
                          Note: Indices of Multiple Deprivation have been re-based for London"), 
-                    style = "font-family: Open Sans;color: #2A2A2A;font-style: italic; font-size: 12px; text-align: left"
+                    style = "font-family: Roboto;color: #2A2A2A;font-style: italic; font-size: 12px; text-align: left"
 )
 
 #remove NA
@@ -557,7 +569,10 @@ m2covid <- leaflet(EWS.centroids.dfXT, height = "580px", options = leafletOption
                   sizes = c(2.5,4.5,7)*2, position = "bottomright" , title = "CC change <br> 2019-2025<br>&nbsp") %>% 
   
   addLegend(pal = factpal, values = EWS.centroids.df$`IMD decile London (1 is most deprived)`, 
-            labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), position = "bottomright", title = "IMD deciles <br>(1 = low)") %>% 
+            labels = levels(EWS.centroids.df$`IMD decile London (1 is most deprived)`), 
+            position = "bottomright", 
+            title = "IMD deciles <br>(1 = low)",
+            opacity = 1) %>% 
   removeDrawToolbar(clearFeatures = T) %>% 
   addResetMapButton() 
 m2covid
